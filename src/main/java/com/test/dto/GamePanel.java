@@ -13,7 +13,8 @@ import java.util.List;
 
 @Data
 public class GamePanel extends JPanel {
-    private TanKe tanKe;
+    private TanKe tanKe1;
+    private TanKe tanKe2;
     private List<TanKe> enemyList = Lists.newCopyOnWriteArrayList();
     private List<Bullet> bullets = Lists.newCopyOnWriteArrayList();
     private BufferedImage parentImg;
@@ -49,8 +50,9 @@ public class GamePanel extends JPanel {
         for (TanKe ke : enemyList) {
             ke.drawMe(g);
         }
-        tanKe.drawMe(g);
-        if (tanKe.isDie()) {
+        tanKe1.drawMe(g);
+        tanKe2.drawMe(g);
+        if (tanKe1.isDie()&&tanKe2.isDie()) {
             g.setColor(Color.RED);
             g.getFont().deriveFont(14F);
             g.drawString("GAME OVER", GameConsts.PANEL_WIDTH / 2, GameConsts.PANEL_HEIGHT / 2);
@@ -77,12 +79,19 @@ public class GamePanel extends JPanel {
 
     public void init() {
         List<TanKe> objects = Lists.newCopyOnWriteArrayList();
-        TanKe tanKe = new TanKe(parentImg, GameConsts.PANEL_WIDTH / 2, GameConsts.PANEL_HEIGHT - 26, 4, 4);
+        TanKe tanKe1 = new TanKe(parentImg, GameConsts.PANEL_WIDTH / 2-42, GameConsts.PANEL_HEIGHT - 26, 4, 4);
+        TanKe tanKe2 = new TanKe(parentImg, GameConsts.PANEL_WIDTH / 2+42, GameConsts.PANEL_HEIGHT - 26, 4, 38);
+
         for (int i = 0; i < GameConsts.ENEMY_NUM; i++) {
-            TanKe enemy = new TanKe(parentImg, i * 104, 0, 4, 72);
+            TanKe enemy = new TanKe(parentImg, i * (GameConsts.PANEL_WIDTH/GameConsts.ENEMY_NUM), 0, 4, 72);
             objects.add(enemy);
         }
         this.setEnemyList(objects);
-        this.setTanKe(tanKe);
+        this.setTanKe1(tanKe1);
+        this.setTanKe2(tanKe2);
+    }
+
+    public boolean isOver() {
+        return (tanKe1.isDie()&&tanKe2.isDie()) || isWin();
     }
 }

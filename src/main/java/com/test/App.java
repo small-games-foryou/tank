@@ -36,29 +36,68 @@ public class App {
         frame.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                TanKe tanKe = gamePanel.getTanKe();
+                TanKe tanKe1 = gamePanel.getTanKe1();
+                TanKe tanKe2 = gamePanel.getTanKe2();
                 super.keyPressed(e);
-                Direction direction = null;
+                Direction direction1 = null;
+                Direction direction2 = null;
                 int keyCode = e.getKeyCode();
-                if ((tanKe.isDie() || gamePanel.isWin())&&keyCode!=10) {
+                if ((gamePanel.isOver()) && keyCode != 10) {
                     return;
                 }
                 if (keyCode == 37) {
-                    direction = Direction.LEFT;
+                    direction2 = Direction.LEFT;
                 }
                 if (keyCode == 38) {
-                    direction = Direction.UP;
+                    direction2 = Direction.UP;
                 }
                 if (keyCode == 39) {
-                    direction = Direction.RIGHT;
+                    direction2 = Direction.RIGHT;
                 }
                 if (keyCode == 40) {
-                    direction = Direction.DOWN;
+                    direction2 = Direction.DOWN;
                 }
-                if (keyCode == 32) {
-                    Bullet bullet = new Bullet(parentImg, tanKe.getX() + 6, tanKe.getY() + 6, tanKe.getDirection(), true);
-                    gamePanel.addBullet(bullet);
-                    PoolUtil.submit(new Audio("audio/shoot.wav")::play);
+                if (keyCode == 65) {
+                    direction1 = Direction.LEFT;
+                }
+                if (keyCode == 87) {
+                    direction1 = Direction.UP;
+                }
+                if (keyCode == 68) {
+                    direction1 = Direction.RIGHT;
+                }
+                if (keyCode == 83) {
+                    direction1 = Direction.DOWN;
+                }
+                if (keyCode == 74) {
+                    if (!gamePanel.getTanKe1().isDie()&& gamePanel.isStarted()) {
+                        Bullet bullet = new Bullet(parentImg, tanKe1.getX() + 6, tanKe1.getY() + 6, tanKe1.getDirection(), true);
+                        gamePanel.addBullet(bullet);
+                        PoolUtil.submit(new Audio("audio/shoot.wav")::play);
+                    }
+
+                }
+                if (keyCode == 98) {
+                    if (!gamePanel.getTanKe2().isDie()&& gamePanel.isStarted()) {
+                        Bullet bullet = new Bullet(parentImg, tanKe2.getX() + 6, tanKe2.getY() + 6, tanKe2.getDirection(), true);
+                        gamePanel.addBullet(bullet);
+                        PoolUtil.submit(new Audio("audio/shoot.wav")::play);
+                    }
+                }
+
+                if (direction1 != null) {
+                    if (!gamePanel.getTanKe1().isDie()&& gamePanel.isStarted()) {
+                        tanKe1.move(direction1);
+                        PoolUtil.submit(new Audio("audio/player.move.wav")::play);
+                        gamePanel.repaint();
+                    }
+                }
+                if (direction2 != null) {
+                    if (!gamePanel.getTanKe2().isDie()&& gamePanel.isStarted()) {
+                        tanKe2.move(direction2);
+                        PoolUtil.submit(new Audio("audio/player.move.wav")::play);
+                        gamePanel.repaint();
+                    }
                 }
                 //按enter开始
                 if (keyCode == 10) {
@@ -72,11 +111,9 @@ public class App {
                             ScheduledFuture<?> scheduledFuture1 = null;
                         };
                         ref.scheduledFuture = PoolUtil.startScheduled(() -> {
-                            TanKe tk = gamePanel.getTanKe();
-                            if (tk.isDie() || gamePanel.isWin()) {
+                            if (gamePanel.isOver()) {
                                 gamePanel.setStarted(false);
                                 gamePanel.setBullets(Lists.newCopyOnWriteArrayList());
-                                gamePanel.setEnemyList(Lists.newCopyOnWriteArrayList());
                                 ref.scheduledFuture.cancel(false);
                                 return;
                             }
@@ -89,22 +126,16 @@ public class App {
                             }
                         }, 400L);
                         ref.scheduledFuture1 = PoolUtil.startScheduled(() -> {
-                            TanKe tk = gamePanel.getTanKe();
-                            if (tk.isDie() || gamePanel.isWin()) {
+                            if (gamePanel.isOver()) {
                                 ref.scheduledFuture1.cancel(false);
                             }
                             List<Bullet> list = gamePanel.getBullets().stream().filter(f -> !f.isDie()).toList();
                             for (Bullet bullet : list) {
-                                bullet.move(gamePanel.getEnemyList(), tk);
+                                bullet.move(gamePanel);
                                 gamePanel.repaint();
                             }
                         }, 30L);
                     }
-                }
-                if (direction != null) {
-                    tanKe.move(direction);
-                    PoolUtil.submit(new Audio("audio/player.move.wav")::play);
-                    gamePanel.repaint();
                 }
 
 

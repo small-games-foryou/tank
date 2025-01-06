@@ -21,7 +21,7 @@ public class Bullet implements Draw {
     private boolean die;
     private boolean playerShot;
 
-    public Bullet(BufferedImage parentImg, int x, int y, Direction direction,boolean playerShot) {
+    public Bullet(BufferedImage parentImg, int x, int y, Direction direction, boolean playerShot) {
         this.x = x;
         this.y = y;
         this.playerShot = playerShot;
@@ -35,7 +35,10 @@ public class Bullet implements Draw {
         g.drawImage(bulletImg, x, y, width, height, null);
     }
 
-    public void move(List<TanKe> tanKes, TanKe player) {
+    public void move(GamePanel gamePanel) {
+        List<TanKe> tanKes = gamePanel.getEnemyList();
+        TanKe player1 = gamePanel.getTanKe1();
+        TanKe player2 = gamePanel.getTanKe2();
         if (direction != null && !this.isDie()) {
             if (direction.equals(Direction.UP)) {
                 this.setY(getY() - height);
@@ -50,16 +53,20 @@ public class Bullet implements Draw {
                 this.setX(getX() + width);
             }
             this.setDie(GamePanel.isOutOfPanel(getX(), getY(), width, height));
-            if(this.isPlayerShot()){
+            if (this.isPlayerShot()) {
                 for (TanKe tanKe : Optional.ofNullable(tanKes).orElse(Lists.newArrayList())) {
-                    if(tanKe.getRect().intersects(this.getRect())){
+                    if (tanKe.getRect().intersects(this.getRect())) {
                         tanKe.die();
                     }
                 }
-            }else{
-                if(player.getRect().intersects(this.getRect())){
-                    player.die();
+            } else {
+                if (player1.getRect().intersects(this.getRect())) {
+                    player1.die();
                 }
+                if (player2.getRect().intersects(this.getRect())) {
+                    player2.die();
+                }
+
             }
 
         }
