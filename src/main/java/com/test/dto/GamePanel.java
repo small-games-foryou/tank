@@ -4,17 +4,17 @@ import com.google.common.collect.Lists;
 import com.test.consts.GameConsts;
 import com.test.service.Audio;
 import com.test.util.PoolUtil;
-import lombok.Data;
+
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-@Data
+
 public class GamePanel extends JPanel {
-    private TanKe tanKe1;
-    private TanKe tanKe2;
+    private TanKe tanKeOne;
+    private TanKe tanKeTwo;
     private List<TanKe> enemyList = Lists.newCopyOnWriteArrayList();
     private List<Bullet> bullets = Lists.newCopyOnWriteArrayList();
     private BufferedImage parentImg;
@@ -50,9 +50,9 @@ public class GamePanel extends JPanel {
         for (TanKe ke : enemyList) {
             ke.drawMe(g);
         }
-        tanKe1.drawMe(g);
-        tanKe2.drawMe(g);
-        if (tanKe1.isDie()&&tanKe2.isDie()) {
+        tanKeOne.drawMe(g);
+        tanKeTwo.drawMe(g);
+        if (tanKeOne.isDie()&& tanKeTwo.isDie()) {
             g.setColor(Color.RED);
             g.getFont().deriveFont(14F);
             g.drawString("GAME OVER", GameConsts.PANEL_WIDTH / 2, GameConsts.PANEL_HEIGHT / 2);
@@ -87,11 +87,76 @@ public class GamePanel extends JPanel {
             objects.add(enemy);
         }
         this.setEnemyList(objects);
-        this.setTanKe1(tanKe1);
-        this.setTanKe2(tanKe2);
+        this.setTanKeOne(tanKe1);
+        this.setTanKeTwo(tanKe2);
     }
 
     public boolean isOver() {
-        return (tanKe1.isDie()&&tanKe2.isDie()) || isWin();
+        return (tanKeOne.isDie()&& tanKeTwo.isDie()) || isWin();
     }
+
+    public TanKe getTanKeOne() {
+        return tanKeOne;
+    }
+
+    public void setTanKeOne(TanKe tanKeOne) {
+        this.tanKeOne = tanKeOne;
+    }
+
+    public TanKe getTanKeTwo() {
+        return tanKeTwo;
+    }
+
+    public void setTanKeTwo(TanKe tanKeTwo) {
+        this.tanKeTwo = tanKeTwo;
+    }
+
+    public List<TanKe> getEnemyList() {
+        return enemyList;
+    }
+
+    public void setEnemyList(List<TanKe> enemyList) {
+        this.enemyList = enemyList;
+    }
+
+    public List<Bullet> getBullets() {
+        return bullets;
+    }
+
+    public void setBullets(List<Bullet> bullets) {
+        this.bullets = bullets;
+    }
+
+    public BufferedImage getParentImg() {
+        return parentImg;
+    }
+
+    public void setParentImg(BufferedImage parentImg) {
+        this.parentImg = parentImg;
+    }
+
+    public List<BigExplode> getBigExplodes() {
+        return bigExplodes;
+    }
+
+    public void setBigExplodes(List<BigExplode> bigExplodes) {
+        this.bigExplodes = bigExplodes;
+    }
+
+    public boolean isWin() {
+        return win;
+    }
+
+    public void setWin(boolean win) {
+        this.win = win;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
+    }
+
 }

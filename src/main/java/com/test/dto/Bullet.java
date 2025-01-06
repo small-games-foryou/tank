@@ -3,14 +3,12 @@ package com.test.dto;
 import com.google.common.collect.Lists;
 import com.test.consts.Direction;
 import com.test.service.Draw;
-import lombok.Data;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Optional;
 
-@Data
 public class Bullet implements Draw {
     private BufferedImage bulletImg;
     private Direction direction;
@@ -37,8 +35,8 @@ public class Bullet implements Draw {
 
     public void move(GamePanel gamePanel) {
         List<TanKe> tanKes = gamePanel.getEnemyList();
-        TanKe player1 = gamePanel.getTanKe1();
-        TanKe player2 = gamePanel.getTanKe2();
+        TanKe player1 = gamePanel.getTanKeOne();
+        TanKe player2 = gamePanel.getTanKeTwo();
         if (direction != null && !this.isDie()) {
             if (direction.equals(Direction.UP)) {
                 this.setY(getY() - height);
@@ -74,5 +72,69 @@ public class Bullet implements Draw {
 
     public Rectangle getRect() {
         return new Rectangle(x, y, width, height);
+    }
+
+    public BufferedImage getBulletImg() {
+        return bulletImg;
+    }
+
+    public void setBulletImg(BufferedImage bulletImg) {
+        this.bulletImg = bulletImg;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public boolean isDie() {
+        return die;
+    }
+
+    public void setDie(boolean die) {
+        this.die = die;
+    }
+
+    public boolean isPlayerShot() {
+        return playerShot;
+    }
+
+    public void setPlayerShot(boolean playerShot) {
+        this.playerShot = playerShot;
     }
 }

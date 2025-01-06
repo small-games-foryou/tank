@@ -2,14 +2,12 @@ package com.test.dto;
 
 import com.test.service.Draw;
 import com.test.util.GameUtil;
-import lombok.Data;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import java.util.List;
 
-@Data
 public class Explode implements Draw {
     private int x;
     private int y;
@@ -36,5 +34,45 @@ public class Explode implements Draw {
         Explode e4 = new Explode(x,y,62,58, GameUtil.splitImg(parentImg,785,141,62,58));
         Explode e5 = new Explode(x,y,64,64, GameUtil.splitImg(parentImg,852,138,64,64));
         return List.of(e1,e2,e3,e4,e5);
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public BufferedImage getImg() {
+        return img;
+    }
+
+    public void setImg(BufferedImage img) {
+        this.img = img;
     }
 }

@@ -7,7 +7,6 @@ import com.test.service.Audio;
 import com.test.service.Draw;
 import com.test.util.GameUtil;
 import com.test.util.PoolUtil;
-import lombok.Data;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -16,7 +15,6 @@ import java.util.List;
 import static com.test.consts.GameConsts.BLOCK_SIZE;
 import static com.test.consts.GameConsts.TANK_STEP;
 
-@Data
 public class TanKe implements Draw {
     private BufferedImage parentImg;
     private List<BufferedImage> upImg;
@@ -31,7 +29,6 @@ public class TanKe implements Draw {
     private int height = 26;
     private boolean die;
     private BigExplode bigExplode;
-
     public TanKe(BufferedImage parentImg, int x, int y, int imageX, int imageY) {
         direction = Direction.UP;
         this.x = x;
@@ -192,4 +189,110 @@ public class TanKe implements Draw {
             bigExplode = null;
         },1000);
     }
+
+    public BufferedImage getParentImg() {
+        return parentImg;
+    }
+
+    public void setParentImg(BufferedImage parentImg) {
+        this.parentImg = parentImg;
+    }
+
+    public List<BufferedImage> getUpImg() {
+        return upImg;
+    }
+
+    public void setUpImg(List<BufferedImage> upImg) {
+        this.upImg = upImg;
+    }
+
+    public List<BufferedImage> getDownImg() {
+        return downImg;
+    }
+
+    public void setDownImg(List<BufferedImage> downImg) {
+        this.downImg = downImg;
+    }
+
+    public List<BufferedImage> getLeftImg() {
+        return leftImg;
+    }
+
+    public void setLeftImg(List<BufferedImage> leftImg) {
+        this.leftImg = leftImg;
+    }
+
+    public List<BufferedImage> getRightImg() {
+        return rightImg;
+    }
+
+    public void setRightImg(List<BufferedImage> rightImg) {
+        this.rightImg = rightImg;
+    }
+
+    public int getCurrentIndex() {
+        return currentIndex;
+    }
+
+    public void setCurrentIndex(int currentIndex) {
+        this.currentIndex = currentIndex;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public boolean isDie() {
+        return die;
+    }
+
+    public void setDie(boolean die) {
+        this.die = die;
+    }
+
+    public BigExplode getBigExplode() {
+        return bigExplode;
+    }
+
+    public void setBigExplode(BigExplode bigExplode) {
+        this.bigExplode = bigExplode;
+    }
+
+
 }

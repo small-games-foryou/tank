@@ -1,10 +1,8 @@
 package com.test.consts;
 
-import lombok.Getter;
 
 import java.util.Random;
 
-@Getter
 public enum Direction {
     UP, DOWN, LEFT, RIGHT;
 
@@ -31,4 +29,5 @@ public enum Direction {
         }
         return random;
     }
+
 }
