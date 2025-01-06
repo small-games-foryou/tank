@@ -19,6 +19,7 @@ public class GamePanel extends JPanel {
     private BufferedImage parentImg;
     private List<BigExplode> bigExplodes = Lists.newCopyOnWriteArrayList();
     private boolean win;
+    private boolean started;
 
     public GamePanel(BufferedImage parentImg) {
         setSize(GameConsts.PANEL_WIDTH, GameConsts.PANEL_HEIGHT);
@@ -53,18 +54,35 @@ public class GamePanel extends JPanel {
             g.setColor(Color.RED);
             g.getFont().deriveFont(14F);
             g.drawString("GAME OVER", GameConsts.PANEL_WIDTH / 2, GameConsts.PANEL_HEIGHT / 2);
+            g.drawString("按ENTER重新开始", GameConsts.PANEL_WIDTH / 2, GameConsts.PANEL_HEIGHT / 2+100);
             PoolUtil.submit(new Audio("audio/gameOver.wav")::play);
+        }else {
+            if(!started){
+                g.drawString("按ENTER开始", GameConsts.PANEL_WIDTH / 2, GameConsts.PANEL_HEIGHT / 2+100);
+            }
         }
         if (enemyList.stream().allMatch(TanKe::isDie)) {
             win = true;
             g.setColor(Color.GREEN);
             g.getFont().deriveFont(14F);
             g.drawString("YOU WIN", GameConsts.PANEL_WIDTH / 2, GameConsts.PANEL_HEIGHT / 2);
+            g.drawString("按ENTER重新开始", GameConsts.PANEL_WIDTH / 2, GameConsts.PANEL_HEIGHT / 2+100);
             PoolUtil.submit(new Audio("audio/intro.wav")::play);
         }
     }
 
     public void addBullet(Bullet bullet) {
         bullets.add(bullet);
+    }
+
+    public void init() {
+        List<TanKe> objects = Lists.newCopyOnWriteArrayList();
+        TanKe tanKe = new TanKe(parentImg, GameConsts.PANEL_WIDTH / 2, GameConsts.PANEL_HEIGHT - 26, 4, 4);
+        for (int i = 0; i < GameConsts.ENEMY_NUM; i++) {
+            TanKe enemy = new TanKe(parentImg, i * 104, 0, 4, 72);
+            objects.add(enemy);
+        }
+        this.setEnemyList(objects);
+        this.setTanKe(tanKe);
     }
 }

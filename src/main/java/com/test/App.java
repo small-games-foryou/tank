@@ -18,10 +18,10 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 
 
 public class App {
-    private static boolean started = false;
 
     public static void main(String[] args) throws IOException {
         BufferedImage parentImg = ImageIO.read(ResourceUtil.getStreamSafe("classpath:images/tank_sprite.png"));
@@ -30,25 +30,19 @@ public class App {
         JFrame.setDefaultLookAndFeelDecorated(true);
         JFrame frame = new JFrame("坦克大战");
         GamePanel gamePanel = new GamePanel(parentImg);
-        List<TanKe> objects = Lists.newCopyOnWriteArrayList();
-        TanKe tanKe = new TanKe(parentImg, GameConsts.PANEL_WIDTH / 2, GameConsts.PANEL_HEIGHT - 26, 4, 4);
-        for (int i = 0; i < GameConsts.ENEMY_NUM; i++) {
-            TanKe enemy = new TanKe(parentImg, i * 104, 0, 4, 72);
-            objects.add(enemy);
-        }
-        gamePanel.setEnemyList(objects);
-        gamePanel.setTanKe(tanKe);
+        gamePanel.init();
 
         frame.add(gamePanel);
         frame.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if(tanKe.isDie()||gamePanel.isWin()){
-                    return;
-                }
+                TanKe tanKe = gamePanel.getTanKe();
                 super.keyPressed(e);
                 Direction direction = null;
                 int keyCode = e.getKeyCode();
+                if ((tanKe.isDie() || gamePanel.isWin())&&keyCode!=10) {
+                    return;
+                }
                 if (keyCode == 37) {
                     direction = Direction.LEFT;
                 }
@@ -62,48 +56,63 @@ public class App {
                     direction = Direction.DOWN;
                 }
                 if (keyCode == 32) {
-                    Bullet bullet = new Bullet(parentImg, tanKe.getX() + 6, tanKe.getY() + 6, tanKe.getDirection(),true);
+                    Bullet bullet = new Bullet(parentImg, tanKe.getX() + 6, tanKe.getY() + 6, tanKe.getDirection(), true);
                     gamePanel.addBullet(bullet);
                     PoolUtil.submit(new Audio("audio/shoot.wav")::play);
+                }
+                //按enter开始
+                if (keyCode == 10) {
+                    if (!gamePanel.isStarted()) {
+                        gamePanel.setStarted(true);
+                        gamePanel.setWin(false);
+                        gamePanel.init();
+                        PoolUtil.submit(new Audio("audio/hi.wav")::play);
+                        var ref = new Object() {
+                            ScheduledFuture<?> scheduledFuture = null;
+                            ScheduledFuture<?> scheduledFuture1 = null;
+                        };
+                        ref.scheduledFuture = PoolUtil.startScheduled(() -> {
+                            TanKe tk = gamePanel.getTanKe();
+                            if (tk.isDie() || gamePanel.isWin()) {
+                                gamePanel.setStarted(false);
+                                gamePanel.setBullets(Lists.newCopyOnWriteArrayList());
+                                gamePanel.setEnemyList(Lists.newCopyOnWriteArrayList());
+                                ref.scheduledFuture.cancel(false);
+                                return;
+                            }
+                            for (TanKe ke : gamePanel.getEnemyList().stream().filter(f -> !f.isDie()).toList()) {
+                                Direction dir = Direction.random(ke.getDirection());
+                                ke.keepMove(dir);
+                                Bullet bullet = new Bullet(parentImg, ke.getX() + 6, ke.getY() + 6, ke.getDirection(), false);
+                                gamePanel.addBullet(bullet);
+                                gamePanel.repaint();
+                            }
+                        }, 400L);
+                        ref.scheduledFuture1 = PoolUtil.startScheduled(() -> {
+                            TanKe tk = gamePanel.getTanKe();
+                            if (tk.isDie() || gamePanel.isWin()) {
+                                ref.scheduledFuture1.cancel(false);
+                            }
+                            List<Bullet> list = gamePanel.getBullets().stream().filter(f -> !f.isDie()).toList();
+                            for (Bullet bullet : list) {
+                                bullet.move(gamePanel.getEnemyList(), tk);
+                                gamePanel.repaint();
+                            }
+                        }, 30L);
+                    }
                 }
                 if (direction != null) {
                     tanKe.move(direction);
                     PoolUtil.submit(new Audio("audio/player.move.wav")::play);
                     gamePanel.repaint();
                 }
-                if (!started) {
-                    started = true;
-                    PoolUtil.submit(new Audio("audio/hi.wav")::play);
-                    PoolUtil.startScheduled(() -> {
-                        if (tanKe.isDie()||gamePanel.isWin()) {
-                            started = false;
-                            return;
-                        }
-                        for (TanKe ke : gamePanel.getEnemyList().stream().filter(f->!f.isDie()).toList()) {
-                            Direction dir = Direction.random(ke.getDirection());
-                            ke.keepMove(dir);
-                            Bullet bullet = new Bullet(parentImg, ke.getX() + 6, ke.getY() + 6, ke.getDirection(),false);
-                            gamePanel.addBullet(bullet);
-                            gamePanel.repaint();
-                        }
-                    }, 400L);
-                    PoolUtil.startScheduled(() -> {
-                        if (tanKe.isDie()||gamePanel.isWin()) {
-                            return;
-                        }
-                        List<Bullet> list = gamePanel.getBullets().stream().filter(f -> !f.isDie()).toList();
-                        for (Bullet bullet : list) {
-                            bullet.move(gamePanel.getEnemyList(),tanKe);
-                            gamePanel.repaint();
-                        }
-                    }, 30L);
-                }
+
 
             }
         });
         frame.setBackground(Color.GRAY);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(GameConsts.PANEL_WIDTH+26, GameConsts.PANEL_HEIGHT+30);
+        frame.setSize(GameConsts.PANEL_WIDTH + 26, GameConsts.PANEL_HEIGHT + 30);
         frame.setFocusable(true);
         int windowWidth = frame.getWidth(); // 获得窗口宽
         int windowHeight = frame.getHeight(); // 获得窗口高
